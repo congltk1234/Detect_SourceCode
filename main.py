@@ -19,6 +19,11 @@ async def guesslangTest(item: model.Item):
     response = detect.guessLang(item.text)
     return response
 
+@app.post("/guesslang/extract")
+async def guesslangExtract(item: model.Item):
+    response = detect.guessLang_extract(item.text)
+    return response
+
 
 ## CodeBERT
 @app.post("/CodeBERT")

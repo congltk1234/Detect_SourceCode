@@ -14,21 +14,34 @@ def preprocess(raw_text)->list:
     return raw_text.split('\n\n')
 
 
-def guessLang(raw_text):
+def guessLang(block):
+    '''
+    Classify codeblock language using GuessLang
+    '''
+    name = guess.language_name(block+'\n').lower()
+    return name
+
+
+def guessLang_extract(raw_text):
     '''
     Extract Code block using GuessLang
     '''
     response = {}
     count = 0
-
+    
     for block in preprocess(raw_text):
-        name = guess.language_name(block+'\n').lower()
+        name = guessLang(block)
         if name not in support_lang:
             name = 'Not SourceCode'
         else:
             response[f'SourceCode {count}'] = {'language':name, 'source':block}
             count+=1
-    return response
+
+    if len(response) == 0:
+        return {'msg': 'No SourceCode found'}
+    else:
+        return response
+    
 
 
 from transformers import TextClassificationPipeline,RobertaTokenizer, RobertaForSequenceClassification
@@ -41,5 +54,8 @@ pipeline = TextClassificationPipeline(
     )
 
 def codeBERT(text):
+    '''
+    Classify codeblock language using codeBERT
+    '''
     name = pipeline(text)[0]
     return name
