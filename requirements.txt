@@ -1,5 +1,4 @@
-guesslang
-uvicorn
 fastapi
 transformers
 torch
+guesslang
