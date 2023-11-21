@@ -1,0 +1,38 @@
+Sure, I can provide you with simple implementations of the Fibonacci sequence in both C and Python.
+
+#include <stdio.h>
+int fibonacci(int n) {
+    if (n <= 1)
+        return n;
+    else
+        return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+int main() {
+    int n, i;
+    printf("Enter the number of terms in the Fibonacci sequence: ");
+    scanf("%d", &n);
+    printf("Fibonacci sequence:\n");
+    for (i = 0; i < n; i++) {
+        printf("%d ", fibonacci(i));
+    }
+    return 0;
+}
+
+Python Implementation
+
+def fibonacci(n):
+    if n <= 1:
+        return n
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+
+n = int(input("Enter the number of terms in the Fibonacci sequence: "))
+print("Fibonacci sequence:")
+for i in range(n):
+    print(fibonacci(i), end=" ")
+
+In both implementations, the fibonacci function recursively calculates the Fibonacci sequence.
+The C version uses printf and scanf for input and output, while the Python version uses input and print.
+Note that these implementations are simple and may not be efficient for large values of n due to the recursive nature,
+which leads to repeated calculations. For more efficient implementations, you might want to consider using dynamic programming or memoization techniques.

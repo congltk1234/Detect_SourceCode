@@ -1,4 +1,7 @@
-fastapi
-transformers
-torch
-guesslang
+fastapi==0.104.1
+guesslang==2.2.1
+tensorflow
+torch==2.1.1
+transformers==4.35.2
+typing_extensions==4.8.0
+uvicorn==0.24.0.post1
