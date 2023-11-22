@@ -1,8 +1,11 @@
 from fastapi import FastAPI
-import app.detect
+from fastapi.responses import RedirectResponse
+
+from detect import guessLang
+from detect import guessLang_extract
+from detect import codeBERT
 
 from pydantic import BaseModel
-from typing import Union
 
 class Item(BaseModel):
     text: str
@@ -22,16 +25,16 @@ async def test_guesslang():
 ## Guesslang
 @app.post("/guesslang")
 async def guesslangTest(item: Item):
-    response = detect.guessLang(item.text)
+    response = guessLang(item.text)
     return response
 
 @app.post("/guesslang/extract")
 async def guesslangExtract(item: Item):
-    response = detect.guessLang_extract(item.text)
+    response = guessLang_extract(item.text)
     return response
 
 
 ## CodeBERT
 @app.post("/CodeBERT")
 async def codebertTest(item: Item):
-    return detect.codeBERT(item.text)
+    return codeBERT(item.text)
