@@ -1,13 +1,19 @@
 from fastapi import FastAPI
-import model
-from func import detect
+import app.detect
+
+from pydantic import BaseModel
+from typing import Union
+
+class Item(BaseModel):
+    text: str
 
 app = FastAPI()
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+# redirect
+@app.get("/", include_in_schema=False)
+async def redirect():
+    return RedirectResponse("/docs")
 
 @app.get("/guesslang")
 async def test_guesslang():
@@ -15,17 +21,17 @@ async def test_guesslang():
 
 ## Guesslang
 @app.post("/guesslang")
-async def guesslangTest(item: model.Item):
+async def guesslangTest(item: Item):
     response = detect.guessLang(item.text)
     return response
 
 @app.post("/guesslang/extract")
-async def guesslangExtract(item: model.Item):
+async def guesslangExtract(item: Item):
     response = detect.guessLang_extract(item.text)
     return response
 
 
 ## CodeBERT
 @app.post("/CodeBERT")
-async def codebertTest(item: model.Item):
+async def codebertTest(item: Item):
     return detect.codeBERT(item.text)

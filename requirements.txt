@@ -1,7 +1,22 @@
+# pip install -r requirements.txt --use-deprecated=legacy-resolver
+
+# base ----------------------------------
+numpy>=1.18.5
+tqdm>=4.41.1
+requests>=2.23.0
+
+# API framework --------------------------
 fastapi==0.104.1
-guesslang==2.2.1
-tensorflow
+uvicorn
+
+# deep learning -------------------------
+tensorflow~=2.5.0
 torch==2.1.1
 transformers==4.35.2
+
+# GuessLang ------------------------------
+guesslang==2.2.1
+
+# Others
+protobuf==3.19.6
 typing_extensions==4.8.0
-uvicorn==0.24.0.post1

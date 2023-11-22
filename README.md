@@ -6,7 +6,7 @@
 `venv/Scripts/Activate.ps1`
 
 
-`!pip install -r requirements.txt --use-deprecated=legacy-resolver`
+`pip install -r requirements.txt --use-deprecated=legacy-resolver`
 
 `uvicorn main:app --reload`
 
