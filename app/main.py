@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
-from detect import guessLang
-from detect import guessLang_extract
-from detect import codeBERT
+from app.func.detect import *
 
 from pydantic import BaseModel
 
