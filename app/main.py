@@ -16,13 +16,9 @@ app = FastAPI()
 async def redirect():
     return RedirectResponse("/docs")
 
-@app.get("/guesslang")
-async def test_guesslang():
-    return {"message": "Guesslang Test"}
-
 ## Guesslang
 @app.post("/guesslang")
-async def guesslangTest(item: Item):
+async def guesslangAPI(item: Item):
     response = guessLang(item.text)
     return response
 
