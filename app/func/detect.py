@@ -77,6 +77,8 @@ def codeBERT(text):
     '''
     Classify codeblock language using codeBERT
     '''
+    if len(text) == 0:
+        return {'msg': 'No SourceCode found'}
     pipeline = initialize_CODEBERT_models()
     name = pipeline(text)[0]
     return name

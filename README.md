@@ -20,4 +20,7 @@
 `pytest app/tests/test_detect.py -W ignore::DeprecationWarning`
 `pytest -p no:warnings`
 
+
+# To exe
+`Pyinstaller --noconfirm main.py --collect-data guesslang --copy-metadata guesslang --copy-metadata tqdm --copy-metadata regex --copy-metadata requests --copy-metadata packaging --copy-metadata filelock --copy-metadata numpy --copy-metadata huggingface-hub --copy-metadata safetensors --copy-metadata pyyaml --onefile`
 https://stackoverflow.com/questions/60157335/cant-pip-install-tensorflow-msvcp140-1-dll-missing 
