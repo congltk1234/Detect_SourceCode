@@ -4,3 +4,6 @@ env/
 .pytest_cache/
 dist/
 build/
+output/
+docs/
+openapi*

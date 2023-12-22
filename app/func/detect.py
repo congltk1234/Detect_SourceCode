@@ -1,11 +1,26 @@
-# Define Code Languages Scope:
+##
+# @file detect.py
+#
+# @section description_detect Description
+# File detect.py uses the Guesslang library and CodeBERT model (from Huggingface) to detect the programming language of a given text input. It preprocesses the raw text by breaking it into list of text blocks, and then applies the model to identify the language of each block.
+# 
+# The supported languages include Python, C, Java, JavaScript, PHP, Ruby, Go, HTML, and CSS.
+#
+#
+# Copyright (c) 2023 Brycen Vietnam Co., Ltd.  All rights reserved.
+
+
+
+## Define Code Languages Support
 support_lang = ['python', 'c', 'java', 'javascript', 'php', 'ruby', 'go', 'html', 'css']
 
 
 def preprocess(raw_text)->list:
-    '''
-    Split raw text into list of blocks
-    '''
+    """! Preprocesses the raw text by breaking it into list of text blocks.
+    
+    @param raw_text   The raw text input
+    #return   The preprocessed list of text blocks
+    """
     raw_text = str(raw_text)
     return raw_text.split('\n\n')
 
@@ -15,15 +30,21 @@ def preprocess(raw_text)->list:
 ##########################################
 from guesslang import Guess
 
-def initialize_Guesslang_models():
+def initialize_Guesslang_models()->Guess:
+    """! Initialize Guesslang model.
+    
+    #return   Guesslang model
+    """
     guess = Guess()
     return guess
 
 
-def guessLang(block):
-    '''
-    Classify codeblock language using GuessLang
-    '''
+def guessLang(block)->str:
+    """! Identify programming language of the block using GuessLang model.
+    
+    @param block   The text input
+    #return   The programming language name
+    """
     block = str(block)
     if len(block) >0:
         guess = initialize_Guesslang_models()
@@ -33,10 +54,12 @@ def guessLang(block):
         return None
 
 
-def guessLang_extract(raw_text):
-    '''
-    Extract Code block using GuessLang
-    '''
+def guessLang_extract(raw_text)->dict:
+    """! Extracts source code and identified programming languages from the input text using guesslang.
+    
+    @param block   The text input
+    #return   The programming language name
+    """
     if raw_text == None:
         return {'msg': 'No SourceCode found'}
     
@@ -63,6 +86,10 @@ def guessLang_extract(raw_text):
 from transformers import TextClassificationPipeline,RobertaTokenizer, RobertaForSequenceClassification
 
 def initialize_CODEBERT_models():
+    """! Initialize CodeBERT model.
+    
+    #return   CodeBERT model
+    """
     CODEBERTA_LANGUAGE_ID = "huggingface/CodeBERTa-language-id"
     tokenizer = RobertaTokenizer.from_pretrained(CODEBERTA_LANGUAGE_ID)
     model = RobertaForSequenceClassification.from_pretrained(CODEBERTA_LANGUAGE_ID)
@@ -73,10 +100,12 @@ def initialize_CODEBERT_models():
     return pipeline
 
 
-def codeBERT(text):
-    '''
-    Classify codeblock language using codeBERT
-    '''
+def codeBERT(text)->str:
+    """! Identify programming language of the block using CodeBERT model
+    
+    @param text   The text input
+    #return   The programming language name
+    """
     if len(text) == 0:
         return {'msg': 'No SourceCode found'}
     pipeline = initialize_CODEBERT_models()

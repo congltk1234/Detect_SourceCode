@@ -12,6 +12,7 @@ datas += copy_metadata('huggingface-hub')
 datas += copy_metadata('safetensors')
 datas += copy_metadata('pyyaml')
 datas += copy_metadata('accelerate')
+datas += copy_metadata('transformers')
 
 
 a = Analysis(
