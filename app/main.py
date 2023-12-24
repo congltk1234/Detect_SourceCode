@@ -51,12 +51,19 @@
 # Copyright (c) 2023 Brycen Vietnam Co., Ltd.  All rights reserved.
 
 
-from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
-
+from fastapi import FastAPI, Form, Request, Depends
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+import time
 from func.detect import *
 
 from pydantic import BaseModel
+from dataclasses import dataclass
+
+
+@dataclass
+class SimpleModel:
+    nm: str = Form(...)
 
 class Item(BaseModel):
     text: str
@@ -64,11 +71,22 @@ class Item(BaseModel):
 # Global Constants
 ## Initialize FastAPI application
 app = FastAPI()
+templates = Jinja2Templates(directory='templates')
 
+# @app.get("/", include_in_schema=False)
+# async def redirect():
+#     return RedirectResponse("/docs")
+@app.get('/', response_class=HTMLResponse, include_in_schema=False)
+def main(request: Request):
+    return templates.TemplateResponse('index.html', {'request': request})
 
-@app.get("/", include_in_schema=False)
-async def redirect():
-    return RedirectResponse("/docs")
+@app.post("/form")
+def form_post(form_data: SimpleModel = Depends()):
+    return form_data
+# https://stackoverflow.com/questions/60127234/how-to-use-a-pydantic-model-with-form-data-in-fastapi
+# https://stackoverflow.com/questions/74504161/how-to-submit-selected-value-from-html-dropdown-list-to-fastapi-backend
+# https://stackoverflow.com/questions/74318682/how-to-submit-html-form-input-value-using-fastapi-and-jinja2-templates
+
 
 @app.post("/guesslang")
 async def guesslang_detector(item: Item):
@@ -78,7 +96,9 @@ async def guesslang_detector(item: Item):
 
     @return The identified programming language.
     """
+    start_time = time.time()
     response = guessLang(item.text)
+    print("Time took to process the request and return response is {} sec".format(time.time() - start_time))
     return {"name" : response}
 
 @app.post("/guesslang/extract")
@@ -89,7 +109,10 @@ async def extract_and_detect_by_Guesslang(item: Item):
 
     @return The extracted programming languages.
     """
+    start_time = time.time()
     response = guessLang_extract(item.text)
+    print("Time took to process the request and return response is {} sec".format(time.time() - start_time))
+
     return response
 
 
@@ -101,4 +124,9 @@ async def CodeBert_detector(item: Item):
 
     @return The identified programming language.
     """
-    return {"name" : codeBERT(item.text)}
+
+    start_time = time.time()
+    response = codeBERT(item.text)
+    print("Time took to process the request and return response is {} sec".format(time.time() - start_time))
+
+    return {"name" : response}

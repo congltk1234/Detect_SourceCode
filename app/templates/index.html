@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Forms</title>
+    <!-- Link to Bootstrap CSS (you can download and host it locally if needed) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .center-forms {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .custom-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="center-forms">
+        <div class="custom-form col-md-4">
+            <h2>Guesslang Detector</h2>
+            <form action="/guesslang" method="post">
+                <textarea id="text" name="text" rows="4" cols="30"></textarea><br>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </form>
+        </div>
+
+        <div class="custom-form col-md-4">
+            <h2>Guesslang Extractor</h2>
+            <form action="/guesslang/extractor" method="post">
+                <textarea id="guesslang_extractor_input" name="guesslang_extractor_input" rows="4" cols="30"></textarea><br>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </form>
+        </div>
+
+        <div class="custom-form col-md-4">
+            <h2>CodeBERT Detector</h2>
+            <form action="/CodeBERT" method="post">
+                <textarea id="codebert_input" name="codebert_input" rows="4" cols="30"></textarea><br>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Link to Bootstrap JS (optional, but required for certain Bootstrap features) -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min
