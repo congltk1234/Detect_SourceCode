@@ -7,3 +7,4 @@ build/
 output/
 docs/
 openapi*
+*model.safetensors

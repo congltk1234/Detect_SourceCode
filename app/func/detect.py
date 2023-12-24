@@ -83,16 +83,25 @@ def guessLang_extract(raw_text)->dict:
 ############ CODEBERT ####################
 ##########################################
 
-from transformers import TextClassificationPipeline,RobertaTokenizer, RobertaForSequenceClassification
+from transformers import TextClassificationPipeline, RobertaTokenizer, RobertaForSequenceClassification
+from transformers import AutoTokenizer, AutoModel
 
 def initialize_CODEBERT_models():
     """! Initialize CodeBERT model.
     
     #return   CodeBERT model
     """
+
     CODEBERTA_LANGUAGE_ID = "huggingface/CodeBERTa-language-id"
-    tokenizer = RobertaTokenizer.from_pretrained(CODEBERTA_LANGUAGE_ID)
-    model = RobertaForSequenceClassification.from_pretrained(CODEBERTA_LANGUAGE_ID)
+    # tokenizer = RobertaTokenizer.from_pretrained(CODEBERTA_LANGUAGE_ID)
+    # model = RobertaForSequenceClassification.from_pretrained(CODEBERTA_LANGUAGE_ID)
+    
+    # tokenizer.save_pretrained('saved_model/')
+    # model.save_pretrained('saved_model/')
+
+    tokenizer = RobertaTokenizer.from_pretrained("saved_model/", local_files_only=True)
+    model = RobertaForSequenceClassification.from_pretrained("saved_model/",  local_files_only=True)
+   
     pipeline = TextClassificationPipeline(
             model=model,
             tokenizer=tokenizer

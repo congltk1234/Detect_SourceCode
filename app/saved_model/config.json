@@ -1,0 +1,44 @@
+{
+  "_name_or_path": "huggingface/CodeBERTa-language-id",
+  "_num_labels": 6,
+  "architectures": [
+    "RobertaForSequenceClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "bos_token_id": 0,
+  "classifier_dropout": null,
+  "eos_token_id": 2,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "go",
+    "1": "java",
+    "2": "javascript",
+    "3": "php",
+    "4": "python",
+    "5": "ruby"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {
+    "go": 0,
+    "java": 1,
+    "javascript": 2,
+    "php": 3,
+    "python": 4,
+    "ruby": 5
+  },
+  "layer_norm_eps": 1e-05,
+  "max_position_embeddings": 514,
+  "model_type": "roberta",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 6,
+  "pad_token_id": 1,
+  "position_embedding_type": "absolute",
+  "torch_dtype": "float32",
+  "transformers_version": "4.35.2",
+  "type_vocab_size": 1,
+  "use_cache": true,
+  "vocab_size": 52000
+}
