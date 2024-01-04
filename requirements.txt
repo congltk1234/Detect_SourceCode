@@ -23,3 +23,5 @@ typing_extensions==4.8.0
 httpx
 pytest
 pyinstaller
+auto-py-to-exe
+python-multipart

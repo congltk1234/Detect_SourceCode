@@ -1,31 +1,42 @@
-import json
-import yaml
+import time
+root_time = time.time() 
 import torch
 import uvicorn
-from pydantic import BaseModel
-from fastapi import FastAPI, Body
-from fastapi.responses import RedirectResponse
-from typing import Annotated
 
-class Item(BaseModel):
-    text: str
+from fastapi import FastAPI, Form, Request, Depends
+from fastapi.responses import HTMLResponse
+from dataclasses import dataclass
+from fastapi.templating import Jinja2Templates
+
+@dataclass
+class SimpleModel:
+    input_text: str = Form(...)
 
 
-
-def preprocess(raw_text)->list:
+def preprocess(raw_text):
     '''
     Split raw text into list of blocks
     '''
     raw_text = str(raw_text)
-    return raw_text.split('\n\n')
+    list_block = raw_text.split('\n\n')
+    return list_block
 
 
 ##########################################
 ############ GUESSLANG ###################
 ##########################################
 from guesslang import Guess
+from transformers import RobertaTokenizer, RobertaForSequenceClassification
 
-guess = Guess()
+def load_model():
+    start_time = time.time()
+    tokenizer = RobertaTokenizer.from_pretrained("saved_model/", local_files_only=True)
+    model = RobertaForSequenceClassification.from_pretrained("saved_model/",  local_files_only=True)
+    guess = Guess()
+    print("Success to load model in {} sec".format(time.time() - start_time))
+    return guess,tokenizer,model
+
+guess,tokenizer,model = load_model()
 
 # Define Code Languages Scope:
 support_lang = ['python', 'c', 'java', 'javascript', 'php', 'ruby', 'go', 'html', 'css']
@@ -38,42 +49,27 @@ def guessLang(block):
     if len(block) >0:
         name = guess.language_name(block+'\n')
         return name.lower()
-    else:
-        return None
 
 
 def guessLang_extract(raw_text):
     '''
     Extract Code block using GuessLang
     '''
-    if raw_text == None:
-        return {'msg': 'No SourceCode found'}
-    
     response = {}
     count = 0
-    for block in preprocess(raw_text):
+    list_block = preprocess(raw_text)
+    for block in list_block:
         name = guessLang(block)
-        if name not in support_lang:
-            name = 'Not SourceCode'
-        else:
+        if name in support_lang:
             response[f'SourceCode {count}'] = {'language':name, 'source':block}
             count+=1
 
-    if len(response) == 0:
-        return {'msg': 'No SourceCode found'}
-    else:
-        return response
+    return response
 
 ##########################################
 ############ CODEBERT ####################
 ##########################################
 
-from transformers import RobertaTokenizer, RobertaForSequenceClassification
-
-CODEBERTA_LANGUAGE_ID = "huggingface/CodeBERTa-language-id"
-
-tokenizer = RobertaTokenizer.from_pretrained(CODEBERTA_LANGUAGE_ID)
-model = RobertaForSequenceClassification.from_pretrained(CODEBERTA_LANGUAGE_ID)
 
 
 def codeBERT(CODE_TO_IDENTIFY):
@@ -116,28 +112,37 @@ tags_metadata = [
 
 app = FastAPI(title="Brycen GPT Filter Application",
     openapi_tags=tags_metadata)
+templates = Jinja2Templates('templates')
+print("Success to init API : {} sec".format(time.time() - root_time))
 
-@app.on_event("startup")
-def save_openapi_spec():
-    '''This function is used to save the OpenAPI documentation 
-    data of the FastAPI application to a JSON file. 
-    The purpose of saving the OpenAPI documentation data is to have 
-    a permanent and offline record of the API specification, 
-    which can be used for documentation purposes or 
-    to generate client libraries. It is not necessarily needed, 
-    but can be helpful in certain scenarios.'''
-    openapi_data = app.openapi()
-    # Change "openapi.json" to desired filename
-    with open("openapi.json", "w") as file:
-        json.dump(openapi_data, file)
-    with open("openapi.yaml", "w") as file:
-        yaml.dump(openapi_data, file, sort_keys=False)
 
+# @app.on_event("startup")
+# def save_openapi_spec():
+#     '''This function is used to save the OpenAPI documentation 
+#     data of the FastAPI application to a JSON file. 
+#     The purpose of saving the OpenAPI documentation data is to have 
+#     a permanent and offline record of the API specification, 
+#     which can be used for documentation purposes or 
+#     to generate client libraries. It is not necessarily needed, 
+#     but can be helpful in certain scenarios.'''
+#     openapi_data = app.openapi()
+#     # Change "openapi.json" to desired filename
+#     with open("openapi.json", "w") as file:
+#         json.dump(openapi_data, file)
+#     with open("openapi.yaml", "w") as file:
+#         yaml.dump(openapi_data, file, sort_keys=False)
 
 # redirect
-@app.get("/", include_in_schema=False)
-async def redirect():
-    return RedirectResponse("/docs")
+# @app.get("/", include_in_schema=False)
+# async def redirect():
+#     return RedirectResponse("/docs")
+# https://stackoverflow.com/questions/60127234/how-to-use-a-pydantic-model-with-form-data-in-fastapi
+# https://stackoverflow.com/questions/74504161/how-to-submit-selected-value-from-html-dropdown-list-to-fastapi-backend
+# https://stackoverflow.com/questions/74318682/how-to-submit-html-form-input-value-using-fastapi-and-jinja2-templates
+
+@app.get('/', response_class=HTMLResponse, include_in_schema=False)
+def main(request: Request):
+    return templates.TemplateResponse('index.html', {'request': request})
 
 
 sample = '''for i in range(n):
@@ -155,68 +160,40 @@ sample = '''for i in range(n):
             }
         }
     },)
-async def guesslang_detector(item: Annotated[
-        Item,
-        Body(
-            examples=[
-                {
-                    "text": sample,
-                }
-            ],
-        ),
-    ],):
-    response = guessLang(item.text)
-    return {"name" : response}
+async def guesslang_detector(form_data: SimpleModel = Depends()):
+    """! Returns the identified programming language from the input text using guesslang.
+
+    @param item   The input text to process.
+
+    @return The identified programming language.
+    """
+    start_time = time.time()
+    response = guessLang(form_data.input_text.replace("\r", ""))
+    print("Time took to process the request and return response is {} sec".format(time.time() - start_time))
+    
+    return {"name" : response,
+            'time' : time.time() - start_time}
 
 
 
+@app.post("/guesslang/extract",tags=["guesslang"])
+async def extract_and_detect_by_Guesslang(form_data: SimpleModel = Depends()):
+    """! Extracts source code and identified programming languages from the input text using guesslang.
 
-large_txt = '''This is a sample for test:
+    @param item   The input text to process.
 
-#include <stdio.h>
-int main() {
-   printf("Hello, World!");
-}
-
-Another for test
-
-for i in range(n):\n    print("Hello, World!")'''
-
-
-
-@app.post("/guesslang/extract",tags=["guesslang"],     
-    responses={
-        200: {
-            "description": "Return the codeblock and program language name detected by guesslang.",
-            "content": {
-                "application/json": {
-                    "example": 
-                {
-  "SourceCode 0": {
-    "language": "c",
-    "source": "#include <stdio.h>\nint main() {\n   printf(\"Hello, World!\");\n}"
-  },
-  "SourceCode 1": {
-    "language": "python",
-    "source": "for i in range(n):\n    print(\"Hello, World!\")"
-  }
-}
-                }
-            }
-        }
-    },)
-async def extract_and_detect_by_Guesslang(item: Annotated[
-        Item,
-        Body(
-            examples=[
-                {
-                    "text": large_txt,
-                }
-            ],
-        ),
-    ]):
-    response = guessLang_extract(item.text)
-    return response
+    @return The extracted programming languages.
+    """
+    start_time = time.time()
+    response = guessLang_extract(form_data.input_text.replace("\r", ""))
+    print("Time took to process the request and return response is {} sec".format(time.time() - start_time))
+    if len(response) == 0:
+        return {'msg': 'No SourceCode found',
+                'time' : time.time() - start_time}
+    else:
+        return {'response' :response,
+                'time' : time.time() - start_time}
+    
 
 # CodeBERT
 @app.post("/CodeBERT",tags=["codebert"],
@@ -230,18 +207,20 @@ async def extract_and_detect_by_Guesslang(item: Annotated[
             }
         }
     })
-async def CodeBert_detector(item: Annotated[
-        Item,
-        Body(
-            description = 'Helllo',
-            examples=[
-                {
-                    "text": sample,
-                }
-            ],
-        ),
-    ]):
-    return {"name" : codeBERT(item.text)}
+async def CodeBert_detector(form_data: SimpleModel = Depends()):
+    """! Returns the identified programming language from the input text using CodeBERT.
+
+    @param item   The input text to process.
+
+    @return The identified programming language.
+    """
+
+    start_time = time.time()
+    response = codeBERT(form_data.input_text.replace("\r", ""))
+    print("Time took to process the request and return response is {} sec".format(time.time() - start_time))
+
+    return {"name" : response,
+            'time' : time.time() - start_time}
 
 
 if __name__ == "__main__":

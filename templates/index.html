@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SourceCode Detector</title>
+    <!-- Link to Bootstrap CSS (you can download and host it locally if needed) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 10em;
+        }
+
+        .center-forms {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="center-forms">
+        <h2>SourceCode Detector</h2>
+    <div class="custom-form col-md-4">
+        <form action="/docs" method="get">
+            <input type="submit" value="API document" class="btn btn-primary">
+        </form>
+    </div>
+    
+    </div>
+
+    <div class="center-forms">
+        <div class="custom-form col-md-4">
+            <h2>Guesslang Detector</h2>
+            <form action="/guesslang" method="post">
+                <textarea id="guesslang" name="input_text" rows="4" cols="30"></textarea><br>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </form>
+        </div>
+
+        <div class="custom-form col-md-4">
+            <h2>Guesslang Extractor</h2>
+            <form action="/guesslang/extract" method="post">
+                <textarea id="guesslang_extractor_input" name="input_text" rows="4" cols="30"></textarea><br>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </form>
+        </div>
+
+        <div class="custom-form col-md-4">
+            <h2>CodeBERT Detector</h2>
+            <form action="/CodeBERT" method="post">
+                <textarea id="codebert_input" name="input_text" rows="4" cols="30"></textarea><br>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </form>
+        </div>
+    
+    </div>
+    <p>support_lang = ['python', 'c', 'java', 'javascript', 'php', 'ruby', 'go', 'html', 'css']</p>
+
+</div>
+
+<!-- Link to Bootstrap JS (optional, but required for certain Bootstrap features) -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min"></script>
