@@ -19,6 +19,7 @@ guesslang==2.2.1
 
 # Others ------------------------------
 protobuf==3.19.6
+accelerate
 typing_extensions==4.8.0
 httpx
 pytest

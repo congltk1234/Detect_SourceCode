@@ -1,5 +1,112 @@
 import tkinter as tk
+import time
+import torch
 
+def preprocess(raw_text):
+    '''
+    Split raw text into list of blocks
+    '''
+    raw_text = str(raw_text)
+    list_block = raw_text.split('\n')
+    return list_block
+
+##########################################
+############ GUESSLANG ###################
+##########################################
+from guesslang import Guess
+from transformers import RobertaTokenizer, RobertaForSequenceClassification
+
+def load_model():
+    start_time = time.time()
+    tokenizer = RobertaTokenizer.from_pretrained("saved_model/", local_files_only=True)
+    model = RobertaForSequenceClassification.from_pretrained("saved_model/",  local_files_only=True)
+    guess = Guess()
+    print("Success to load model in {} sec".format(time.time() - start_time))
+    return guess,tokenizer,model
+
+# Define Code Languages Scope:
+# support_lang = ['python', 'c', 'java', 'javascript', 'php', 'ruby', 'go', 'html', 'css']
+not_code = ['tex',  'ini', 'csv' , 'batchfile', 'markdown', 'json', 'prolog' , 'yaml', 'sql', 'powershell', 'dockerfile', 'shell', 'makefile', 'fortran']
+
+def guessLang_classify(block):
+    '''
+    Classify codeblock language using GuessLang
+    '''
+    block = str(block)
+    block = block.strip()
+    if len(block) >0:
+        name = guess.language_name(block)
+        code = sum(value for _, value in name[:28] if _.lower() not in  not_code)
+        notcode = sum(value for _, value in name if _.lower() in not_code)
+        return {'code': code/(code+notcode), 'not_code':notcode/(code+notcode)}
+
+
+def guessLang(block):
+    '''
+    Classify codeblock language using GuessLang
+    '''
+    start_time = time.time()
+    block = str(block)
+    block = block.strip()
+    if len(block) >0:
+        language_probabilities = guess.language_name(block)
+        language_name, _ = language_probabilities[0]
+        return {"name" : language_name.lower(),
+                'time' : time.time() - start_time}
+
+
+def guessLang_extract(raw_text):
+    '''
+    Extract Code block using GuessLang
+    '''
+    response = {}
+    count = 0
+    list_block = preprocess(raw_text)
+    source = ''
+    for i in range(len(list_block)):
+        name = guessLang_classify(list_block[i])
+        try:
+            not_code = name['not_code']
+            if len(list_block[i])> 80:
+                not_code += 0.2
+            if name['code']> not_code:
+                source+='\n' + list_block[i]
+                response[f'Line {count}'] = {
+                    'score':name, 'source':list_block[i]}
+                count+=1
+            else:
+                source+='\n'
+        except:
+            continue
+    print(response)
+    if len(response)>0:
+        return {'msg' : 'There are source code in input text. Cannot go to next step',
+                'bool': False,
+                'Inline source' : source}
+    else:
+        return {'msg' : 'No Sourcecode found',
+                'bool': True,}
+
+##########################################
+############ CODEBERT ####################
+##########################################
+
+def codeBERT(CODE_TO_IDENTIFY):
+    '''
+    Classify codeblock language using codeBERT
+    '''
+    start_time = time.time()
+    if len(CODE_TO_IDENTIFY) == 0:
+        return {'msg': 'No SourceCode found'}
+    
+    inputs = tokenizer(CODE_TO_IDENTIFY, return_tensors="pt")
+    with torch.no_grad():
+        logits = model(**inputs).logits
+    predicted_class_id = logits.argmax().item()
+    result = model.config.id2label[predicted_class_id]
+    return {"name" : result,
+            'time' : time.time() - start_time}
+    
 # This is a scrollable text widget
 class ScrollText(tk.Frame):
     def __init__(self, master, *args, **kwargs):
@@ -73,14 +180,69 @@ class TextLineNumbers(tk.Canvas):
 
 
 def var_states():
-    print(f"Guesslang: {str(guesslang_check.get())},\nCodeBERT: {str(codebert_check.get())},\nMode: {var.get()}")  
-    print(f'Input text: {scroll.get("1.0","end-1c")}')
-    L.configure(text=f'{scroll.get("1.0","end-1c")[:100]}')
+    # print(f"Guesslang: {str(guesslang_check.get())},\nCodeBERT: {str(codebert_check.get())},\nMode: {var.get()}")  
+    print(f"Mode: {var.get()}")  
+    input_text = scroll.get("1.0","end-1c")
+    if var.get() == 'Detector':
+        result_codebert = codeBERT(input_text)
+        result_guesslang = guessLang(input_text)
+        L.configure(text=f'Guesslang:\n    name: {result_guesslang["name"]}\n    time: {result_guesslang["time"]}\n\nCodeBERT:\n    name: {result_codebert["name"]}\n    time: {result_codebert["time"]}')
+    else:
+        extractor = guessLang_extract(input_text)
+        if not extractor["bool"]:
+            L.configure(text=f'{extractor["msg"]}\n\n{extractor["Inline source"]}', foreground="red")
+        else:
+            L.configure(text=f'{extractor["msg"]}', foreground="green")
+
+
+import numpy as np
+def guessLang_evaluate(block):
+    '''
+    Classify codeblock language using GuessLang
+    '''
+    block = str(block)
+    block = block.strip()
+    if len(block) >0:
+        name = guess.language_name(block)
+        code = sum(value for _, value in name[:28] if _.lower() not in  not_code)
+        notcode = sum(value for _, value in name if _.lower() in not_code)
+        code_score = code/(code+notcode) 
+        not_score = notcode/(code+notcode)
+        if code_score > not_score:
+            return 1.
+        else:
+            return 0.
+
+def evaluate():
+    normal_text = open('evaluate/normal_text.txt', 'r')
+    normal_text = normal_text.readlines()
+    source_code = open('evaluate/source_code.txt', 'r')
+    source_code = source_code.readlines()
+    X = normal_text + source_code
+
+    predict = [guessLang_evaluate(i) for i in X]
+    predict = np.array(predict)        
+
+    y_label = np.concatenate((np.zeros(100), np.ones(100)), axis=None)
+
+    # from sklearn.metrics import classification_report
+    # print(classification_report(y_label, predict, target_names=['No Code', 'Source Code']))
+    print('y_label:', y_label)
+    print('predict:', predict)
+    accuracy = (y_label == predict).mean()
+    print('accuracy', accuracy)
+    # from sklearn.metrics import confusion_matrix
+    # print(confusion_matrix(y_label, predict, labels=['No Code', 'Source Code']))
+
+
+
 
 if __name__ == '__main__':
+    guess,tokenizer,model = load_model()
+    evaluate()
     root = tk.Tk()
     scroll = ScrollText(root)
-    scroll.insert(tk.END, "HEY" + 20*'\n')
+    # scroll.insert(tk.END, "HEY" + 20*'\n')
     scroll.pack(expand=True, fill='both', side='left')
     scroll.text.focus()
     root.after(200, scroll.redraw())
@@ -95,17 +257,17 @@ if __name__ == '__main__':
     R2.pack( anchor = tk.W)
 
 
-    model_select = tk.Label(root, text="Model selection:").pack( anchor = tk.W)
-    guesslang_check = tk.IntVar()
-    codebert_check = tk.IntVar()
+    # model_select = tk.Label(root, text="Model selection:").pack( anchor = tk.W)
+    # guesslang_check = tk.IntVar()
+    # codebert_check = tk.IntVar()
 
-    tk.Checkbutton(root, text="Guesslang", variable=guesslang_check).pack( anchor = tk.W)
-    tk.Checkbutton(root, text="CodeBERT", variable=codebert_check).pack( anchor = tk.W)
+    # tk.Checkbutton(root, text="Guesslang", variable=guesslang_check).pack( anchor = tk.W)
+    # tk.Checkbutton(root, text="CodeBERT", variable=codebert_check).pack( anchor = tk.W)
     tk.Button(root, text='Predict', command=var_states).pack( anchor = tk.W)
 
     # •Label():
     tk.Label(root,text="Result").pack(anchor=tk.W)
-    L = tk.Label(root, text="Hello!", relief="sunken", bg = "light yellow")
+    L = tk.Label(root, text="Hello!", relief="sunken", bg = "light yellow", justify="left")
     L.pack()
 
 

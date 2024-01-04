@@ -1,0 +1,100 @@
+int x = 5;
+def add_numbers(a, b):
+for (int i = 0; i < 10; i++) {
+x = "Hello, world!";
+public class MyClass {
+result = 10 / 2;
+console.log("This is a JavaScript program");
+var name = "John";
+#include <stdio.h>
+print("Hello, world!") # Python code
+if (x > 5) {
+for i in range(5):
+x = 10; y = 20;
+int[] numbers = {1, 2, 3, 4, 5};
+x = input("Enter a value: ") # User input
+printf("This is a C program\n");
+x = 5 + 3 * 2;
+function greet(name) {
+String message = "Hello, world!";
+x = True and False;
+float pi = 3.14159;
+x = 10 % 3;
+x = input("Enter your name: ");
+class Person:
+return x + y;
+#include <iostream>
+x = 5 > 3;
+System.out.println("This is a Java program");
+def factorial(n):
+x = [1, 2, 3, 4, 5][0];
+x = input("Enter a number: ");
+bool isPrime(int n) {
+x = None;
+print("This is a Python program") # Output message
+if (x == 5):
+x = "Hello, world!" # A string
+x = 10 + 2.5;
+x = [1, 2, 3, 4, 5][-1];
+return x * x;
+x = input("Enter your age: ");
+x = 5 <= 3;
+print("This is a C++ program");
+int main() { return 0; }
+from math import sqrt
+def my_function(x): return x**2
+for i in range(10): print(i)
+while True: print("This will run forever")
+if x > 0: print("x is positive")
+elif x < 0: print("x is negative")
+else: print("x is zero")
+try: print("This will run") except: print("This will not run")
+finally: print("This will always run")
+class MyClass: def __init__(self): self.x = 0
+my_set.add(4)
+my_range = range(10)
+for i in my_range: print(i)
+for i, x in my_enumerate: print(i, x)
+my_zip = zip(my_list, my_tuple)
+for x, y in my_zip: print(x, y)
+my_filter = filter(lambda x: x > 0, my_list)
+for x in my_filter: print(x)
+my_map = map(lambda x: x**2, my_list)
+next(my_coroutine)
+my_async_function = async def my_async_function() : await asyncio.sleep(1)
+await my_async_function()
+my_thread = threading.Thread(target=my_function, args=(5,))
+my_thread.start()
+my_process = multiprocessing.Process(target=my_function, args=(5,))
+my_process.start()
+my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+my_socket.bind((my_host, my_port))
+my_file = open("my_file.txt", "r")
+my_data = my_file.read()
+my_file.close()
+my_url = "http://www.example.com"
+my_response = requests.get(my_url)
+my_data = my_response.text
+my_parser = BeautifulSoup(my_data, "html.parser")
+my_elements = my_parser.find_all("p")
+for my_element in my_elements: print(my_element.text)
+my_script = """print("Hello, World!")"""
+exec(my_script)
+my_module = importlib.import_module("my_module")
+my_function = getattr(my_module, "my_function")
+my_class = getattr(my_module, "MyClass")
+my_object = my_class()
+my_method = getattr(my_object, "my_method")
+my_variable = getattr(my_object, "my_variable")
+print(my_variable)
+my_tuple = (1, 2, 3)
+my_tuple[0]
+my_dictionary = {"a": 1, "b": 2, "c": 3}
+my_method = getattr(my_object, "my_method")
+my_method()
+my_variable = getattr(my_object, "my_variable")
+std::cout << "Hello, World!" << std::endl;
+fmt.Println("Hello, World!")
+Console.WriteLine("Hello, World!");
+<div class="container">Hello, World!</div>
+body { background-color: #ffffff; }

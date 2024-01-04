@@ -23,4 +23,9 @@
 
 # To exe
 `pyinstaller --noconfirm --onefile --console --copy-metadata "tqdm" --copy-metadata "regex" --copy-metadata "requests" --copy-metadata "packaging" --copy-metadata "filelock" --copy-metadata "numpy" --copy-metadata "huggingface-hub" --copy-metadata "safetensors" --copy-metadata "pyyaml" --collect-all "transformers" --hidden-import "transformers" --hidden-import "tokenizers" --collect-all "tokenizers" --hidden-import "tokenizers.decoders" --collect-all "tokenizers.decoders" --collect-all "guesslang"  "C:/Users/st_cong/Desktop/Detect_SourceCode/main.py"`
+
+
+auto-py-to-exe
+
+https://pypi.org/project/auto-py-to-exe/
 https://stackoverflow.com/questions/60157335/cant-pip-install-tensorflow-msvcp140-1-dll-missing 
