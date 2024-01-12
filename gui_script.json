@@ -1,0 +1,137 @@
+{
+ "version": "auto-py-to-exe-configuration_v1",
+ "pyinstallerOptions": [
+  {
+   "optionDest": "noconfirm",
+   "value": true
+  },
+  {
+   "optionDest": "filenames",
+   "value": "C:/Users/st_cong/Desktop/aa/Detect_SourceCode/gui.py"
+  },
+  {
+   "optionDest": "onefile",
+   "value": true
+  },
+  {
+   "optionDest": "console",
+   "value": true
+  },
+  {
+   "optionDest": "name",
+   "value": "Ver3_TkinterGUI"
+  },
+  {
+   "optionDest": "clean_build",
+   "value": false
+  },
+  {
+   "optionDest": "strip",
+   "value": false
+  },
+  {
+   "optionDest": "noupx",
+   "value": false
+  },
+  {
+   "optionDest": "disable_windowed_traceback",
+   "value": false
+  },
+  {
+   "optionDest": "uac_admin",
+   "value": false
+  },
+  {
+   "optionDest": "uac_uiaccess",
+   "value": false
+  },
+  {
+   "optionDest": "argv_emulation",
+   "value": false
+  },
+  {
+   "optionDest": "bootloader_ignore_signals",
+   "value": false
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "tqdm"
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "regex"
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "packaging"
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "filelock"
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "numpy"
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "huggingface-hub"
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "safetensors"
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "pyyaml"
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "accelerate"
+  },
+  {
+   "optionDest": "copy_metadata",
+   "value": "transformers"
+  },
+  {
+   "optionDest": "collect_all",
+   "value": "guesslang"
+  },
+  {
+   "optionDest": "collect_all",
+   "value": "tokenizers"
+  },
+  {
+   "optionDest": "collect_all",
+   "value": "transformers"
+  },
+  {
+   "optionDest": "collect_all",
+   "value": "tokenizers.decoders"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "transformers"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "guesslang"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "tokenizers.decoders"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "tokenizers"
+  },
+  {
+   "optionDest": "pathex",
+   "value": "C:/Users/st_cong/Desktop/Detect_SourceCode/venv"
+  }
+ ],
+ "nonPyinstallerOptions": {
+  "increaseRecursionLimit": true,
+  "manualArguments": ""
+ }
+}

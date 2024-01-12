@@ -24,6 +24,8 @@ def load_model():
     print("Success to load model in {} sec".format(time.time() - start_time))
     return guess,tokenizer,model
 
+guess,tokenizer,model = load_model()
+
 # Define Code Languages Scope:
 # support_lang = ['python', 'c', 'java', 'javascript', 'php', 'ruby', 'go', 'html', 'css']
 not_code = ['tex',  'ini', 'csv' , 'batchfile', 'markdown', 'json', 'prolog' , 'yaml', 'sql', 'powershell', 'dockerfile', 'shell', 'makefile', 'fortran']
@@ -186,7 +188,7 @@ def var_states():
     if var.get() == 'Detector':
         result_codebert = codeBERT(input_text)
         result_guesslang = guessLang(input_text)
-        L.configure(text=f'Guesslang:\n    name: {result_guesslang["name"]}\n    time: {result_guesslang["time"]}\n\nCodeBERT:\n    name: {result_codebert["name"]}\n    time: {result_codebert["time"]}')
+        L.configure(text=f'Guesslang:\n    name: {result_guesslang["name"]}\n    time: {result_guesslang["time"]}\n\nCodeBERT:\n    name: {result_codebert["name"]}\n    time: {result_codebert["time"]}', foreground="green")
     else:
         extractor = guessLang_extract(input_text)
         if not extractor["bool"]:
@@ -213,6 +215,46 @@ def guessLang_evaluate(block):
         else:
             return 0.
 
+
+def confusion_matrix(y_true, y_pred):
+    # Ensure input arrays are numpy arrays
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+
+    # Calculate true positives, false positives, false negatives, and true negatives
+    tp = np.sum((y_true == 1.) & (y_pred == 1.))
+    fp = np.sum((y_true == 0.) & (y_pred == 1.))
+    fn = np.sum((y_true == 1.) & (y_pred == 0.))
+    tn = np.sum((y_true == 0.) & (y_pred == 0.))
+
+    # Create the confusion matrix
+    matrix = np.array([[tp, fp],
+                       [fn, tn]])
+
+    print('confusion matrix\n',matrix)
+
+def f1_score(y_true, y_pred):
+    # Ensure input arrays are numpy arrays
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+
+    # Calculate true positives, false positives, and false negatives
+    tp = np.sum((y_true == 1.) & (y_pred == 1.))
+    fp = np.sum((y_true == 0.) & (y_pred == 1.))
+    fn = np.sum((y_true == 1.) & (y_pred == 0.))
+
+    # Calculate precision and recall
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+    print('precision',precision)
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+    print('recall',recall)
+
+    # Calculate F1 score
+    f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+
+    return f1
+
+
 def evaluate():
     normal_text = open('evaluate/normal_text.txt', 'r')
     normal_text = normal_text.readlines()
@@ -225,21 +267,20 @@ def evaluate():
 
     y_label = np.concatenate((np.zeros(100), np.ones(100)), axis=None)
 
-    # from sklearn.metrics import classification_report
-    # print(classification_report(y_label, predict, target_names=['No Code', 'Source Code']))
     print('y_label:', y_label)
     print('predict:', predict)
+    confusion_matrix(y_label, predict)
     accuracy = (y_label == predict).mean()
     print('accuracy', accuracy)
-    # from sklearn.metrics import confusion_matrix
-    # print(confusion_matrix(y_label, predict, labels=['No Code', 'Source Code']))
-
-
+    score = f1_score(y_label,predict)
+    print('f1_score', score)
 
 
 if __name__ == '__main__':
-    guess,tokenizer,model = load_model()
-    evaluate()
+    try:
+        evaluate()
+    except:
+        pass
     root = tk.Tk()
     scroll = ScrollText(root)
     # scroll.insert(tk.END, "HEY" + 20*'\n')
