@@ -254,6 +254,19 @@ def f1_score(y_true, y_pred):
 
     return f1
 
+def predict(file_name):
+    source_code = open(file_name, 'r')
+    source_code = source_code.readlines()
+    for i in source_code:
+        if guessLang_evaluate(i)==1:
+            print('predict: This file contains Source Code')
+            L.configure(text=f'This file contains Source Code', foreground="red")
+            return False
+    
+
+
+
+
 
 def evaluate():
     normal_text = open('evaluate/normal_text.txt', 'r')
@@ -276,11 +289,27 @@ def evaluate():
     print('f1_score', score)
 
 
+
+import tkinter.filedialog
+# file explorer window
+def browseFiles():
+    filename = tkinter.filedialog.askopenfilename(initialdir = "/",
+                                          title = "Select a File",
+                                          filetypes = (("Text files",
+                                                        "*.txt*"),
+                                                       ("all files",
+                                                        "*.*")))
+      
+    # Change label contents
+    print(filename)
+    predict(filename)
+
+
 if __name__ == '__main__':
-    try:
-        evaluate()
-    except:
-        pass
+    # try:
+    #     evaluate()
+    # except:
+    #     pass
     root = tk.Tk()
     scroll = ScrollText(root)
     # scroll.insert(tk.END, "HEY" + 20*'\n')
@@ -305,8 +334,8 @@ if __name__ == '__main__':
     # tk.Checkbutton(root, text="Guesslang", variable=guesslang_check).pack( anchor = tk.W)
     # tk.Checkbutton(root, text="CodeBERT", variable=codebert_check).pack( anchor = tk.W)
     tk.Button(root, text='Predict', command=var_states).pack( anchor = tk.W)
-
-    # •Label():
+    # Create a File Explorer label
+    tk.Button(root, text = "Browse Files", command = browseFiles).pack( anchor = tk.W) 
     tk.Label(root,text="Result").pack(anchor=tk.W)
     L = tk.Label(root, text="Hello!", relief="sunken", bg = "light yellow", justify="left")
     L.pack()
