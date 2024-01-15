@@ -27,7 +27,10 @@ def load_model():
 guess,tokenizer,model = load_model()
 
 # Define Code Languages Scope:
-# support_lang = ['python', 'c', 'java', 'javascript', 'php', 'ruby', 'go', 'html', 'css']
+support_lang = ['python', 'cpp', 'java', 'javascript', 'php','typescript'
+                #  'ruby', 'go',
+                #  'html', 'css',
+                   ]
 not_code = ['tex',  'ini', 'csv' , 'batchfile', 'markdown', 'json', 'prolog' , 'yaml', 'sql', 'powershell', 'dockerfile', 'shell', 'makefile', 'fortran']
 
 def guessLang_classify(block):
@@ -38,8 +41,15 @@ def guessLang_classify(block):
     block = block.strip()
     if len(block) >0:
         name = guess.language_name(block)
-        code = sum(value for _, value in name[:28] if _.lower() not in  not_code)
+        code = 0
+        for  _, value in name[:28]:
+            if _.lower() not in support_lang:
+                code+=value*1.5
+            else:
+                code+=value
         notcode = sum(value for _, value in name if _.lower() in not_code)
+        # code = sum(value for _, value in name[:28] if _.lower() not in  not_code)
+
         return {'code': code/(code+notcode), 'not_code':notcode/(code+notcode)}
 
 
@@ -198,6 +208,41 @@ def var_states():
 
 
 import numpy as np
+def confusion_matrix(y_true, y_pred):
+    # Ensure input arrays are numpy arrays
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    # Calculate true positives, false positives, false negatives, and true negatives
+    tp = np.sum((y_true == 1.) & (y_pred == 1.))
+    fp = np.sum((y_true == 0.) & (y_pred == 1.))
+    fn = np.sum((y_true == 1.) & (y_pred == 0.))
+    tn = np.sum((y_true == 0.) & (y_pred == 0.))
+    # Create the confusion matrix
+    matrix = np.array([[tp, fp],
+                       [fn, tn]])
+    print('confusion matrix\n',matrix)
+    return tp,fp,fn,tn
+
+def f1_score(y_true, y_pred):
+    # Ensure input arrays are numpy arrays
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    # Calculate true positives, false positives, and false negatives
+    tp = np.sum((y_true == 1.) & (y_pred == 1.))
+    fp = np.sum((y_true == 0.) & (y_pred == 1.))
+    fn = np.sum((y_true == 1.) & (y_pred == 0.))
+    # Calculate precision and recall
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+    # print('precision',precision)
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+    # print('recall',recall)
+    # Calculate F1 score
+    f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+    return f1
+
+
+
+
 def guessLang_evaluate(block):
     '''
     Classify codeblock language using GuessLang
@@ -206,86 +251,97 @@ def guessLang_evaluate(block):
     block = block.strip()
     if len(block) >0:
         name = guess.language_name(block)
-        code = sum(value for _, value in name[:28] if _.lower() not in  not_code)
+        code = 0
+        for  _, value in name[:28]:
+            if _.lower() not in support_lang:
+                code+=value*1.5
+            else:
+                code+=value/5
         notcode = sum(value for _, value in name if _.lower() in not_code)
         code_score = code/(code+notcode) 
         not_score = notcode/(code+notcode)
+        print(code_score, not_score)
         if code_score > not_score:
-            return 1.
+    # if len(block) >0:
+    #     block = str(block)
+    #     block = block.strip()
+    #     name = guess.language_name(block)
+    #     try:
+    #         name = name.lower()
+    #         if name in support_lang:
+            print(name,':',block)
+            return True
         else:
-            return 0.
-
-
-def confusion_matrix(y_true, y_pred):
-    # Ensure input arrays are numpy arrays
-    y_true = np.array(y_true)
-    y_pred = np.array(y_pred)
-
-    # Calculate true positives, false positives, false negatives, and true negatives
-    tp = np.sum((y_true == 1.) & (y_pred == 1.))
-    fp = np.sum((y_true == 0.) & (y_pred == 1.))
-    fn = np.sum((y_true == 1.) & (y_pred == 0.))
-    tn = np.sum((y_true == 0.) & (y_pred == 0.))
-
-    # Create the confusion matrix
-    matrix = np.array([[tp, fp],
-                       [fn, tn]])
-
-    print('confusion matrix\n',matrix)
-
-def f1_score(y_true, y_pred):
-    # Ensure input arrays are numpy arrays
-    y_true = np.array(y_true)
-    y_pred = np.array(y_pred)
-
-    # Calculate true positives, false positives, and false negatives
-    tp = np.sum((y_true == 1.) & (y_pred == 1.))
-    fp = np.sum((y_true == 0.) & (y_pred == 1.))
-    fn = np.sum((y_true == 1.) & (y_pred == 0.))
-
-    # Calculate precision and recall
-    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-    print('precision',precision)
-    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-    print('recall',recall)
-
-    # Calculate F1 score
-    f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
-
-    return f1
-
-def predict(file_name):
-    source_code = open(file_name, 'r')
-    source_code = source_code.readlines()
-    for i in source_code:
-        if guessLang_evaluate(i)==1:
-            print('predict: This file contains Source Code')
-            L.configure(text=f'This file contains Source Code', foreground="red")
             return False
-    
+        # except:
+        #     pass
+        # code = sum(value for _, value in name[:28] if _.lower() not in  not_code)
+        # notcode = sum(value for _, value in name if _.lower() in not_code)
+        # code_score = code/(code+notcode) 
+        # not_score = notcode/(code+notcode)
+        # if code_score > not_score:
+
+        
+import re
+def preprocss_line(line):
+    # Define the pattern to match
+    pattern1, pattern2, pattern3,p4 = re.compile(r'!+'), re.compile(r'/\* ///////.*?//////// \*/'), re.compile(r'_+'),re.compile(r'/+')
+    output_string = pattern3.sub('', pattern2.sub('', pattern1.sub('', p4.sub('',line))))
+    return output_string
+
+def predict_file(file_name):
+    print(file_name)
+    try:
+        with open(file_name, 'r', encoding='utf-8') as source_code:
+            code_lines = source_code.readlines()
+    except:
+        with open(file_name, 'r', encoding='latin-1') as source_code:
+            code_lines = source_code.readlines()    
+    for line in code_lines:
+        if len(line) >0:
+            line = str(line)
+            line = line.strip()
+            line = preprocss_line(line)
+            name = guess.language_name(line)
+            code = 0
+            notcode = sum(value for _, value in name[:20] if _.lower() in not_code)/len(not_code)
+
+            for  _, value in name[:20]:
+                if _.lower() in support_lang:
+                    code+=value*3.4
+                else:
+                    code+=value/4
+            code= code/20
+            # code_score = code/(code+notcode) 
+            # not_score = notcode/(code+notcode)
+            # print(code, notcode)
+            if code > notcode:
+            # try:
+            #     name = name.lower()
+            #     if name in support_lang:
+                    print(name,':',line)            
+                    print(f'predict: {file_name} contains Source Code')
+                    L.configure(text=f'This file contains Source Code', foreground="red")
+                    return False # Có chứa Source
+            else:
+                continue 
+                    # return True  # Không chưa Source
+            # except:
+            #     pass
+    L.configure(text=f'# Không chưa Source', foreground="green")
+
+    return True
 
 
-
-
-
-def evaluate():
-    normal_text = open('evaluate/normal_text.txt', 'r')
-    normal_text = normal_text.readlines()
-    source_code = open('evaluate/source_code.txt', 'r')
-    source_code = source_code.readlines()
-    X = normal_text + source_code
-
-    predict = [guessLang_evaluate(i) for i in X]
-    predict = np.array(predict)        
-
-    y_label = np.concatenate((np.zeros(100), np.ones(100)), axis=None)
-
-    print('y_label:', y_label)
-    print('predict:', predict)
-    confusion_matrix(y_label, predict)
-    accuracy = (y_label == predict).mean()
+def evaluate(y_label, y_pred):
+    # print('y_label:', y_label)
+    # print('predict:', y_pred)
+    confusion_matrix(y_label, y_pred)
+    y_label = np.array(y_label)
+    y_pred = np.array(y_pred)
+    accuracy = (y_label == y_pred).mean()
     print('accuracy', accuracy)
-    score = f1_score(y_label,predict)
+    score = f1_score(y_label,y_pred)
     print('f1_score', score)
 
 
@@ -299,10 +355,36 @@ def browseFiles():
                                                         "*.txt*"),
                                                        ("all files",
                                                         "*.*")))
-      
     # Change label contents
     print(filename)
-    predict(filename)
+    # predict(filename)
+import os
+from tqdm import tqdm
+def openFolder():
+    folder_selected = tkinter.filedialog.askdirectory()
+    start_time = time.time()
+    # print(os.listdir(folder_selected))
+    # Using os.walk() 
+    ground_truth = []    # 0: Code           1: NoCode
+    model_predict = []
+    for dirpath, dirs, files in tqdm(os.walk(folder_selected)):  
+        for filename in files: 
+            fname = dirpath.replace("\\", "/") + '/' + filename
+            if predict_file(fname):
+                model_predict.append(1.)
+                print(1)
+            else:
+                model_predict.append(0)
+                print(0)
+
+            if 'NoCode' in fname: 
+                ground_truth.append(1.)
+            else:
+                ground_truth.append(0)
+    evaluate(ground_truth, model_predict)
+    print(time.time() - start_time)
+
+    # Change label contents
 
 
 if __name__ == '__main__':
@@ -336,6 +418,7 @@ if __name__ == '__main__':
     tk.Button(root, text='Predict', command=var_states).pack( anchor = tk.W)
     # Create a File Explorer label
     tk.Button(root, text = "Browse Files", command = browseFiles).pack( anchor = tk.W) 
+    tk.Button(root, text = "Open Folder", command = openFolder).pack( anchor = tk.W) 
     tk.Label(root,text="Result").pack(anchor=tk.W)
     L = tk.Label(root, text="Hello!", relief="sunken", bg = "light yellow", justify="left")
     L.pack()
